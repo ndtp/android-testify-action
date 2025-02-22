@@ -4,6 +4,56 @@
 
 GitHub Action for running Android Testify screenshot tests
 
+Run the android-testify tests annotated with [`@ScreenshotInstrumentation`](https://github.com/ndtp/android-testify/blob/main/Library/src/main/java/dev/testify/annotation/ScreenshotInstrumentation.kt) on an emulator hosted on GitHub Actions and report the test results.
+
+Features:
+
+- Configures the emulator for optimal performance with Testify
+- Runs Android Testify tests
+- Save failed test images as Artifacts
+- Prepares a JUnit XML test report
+
+Learn more at https://testify.dev
+
+## Prerequisites
+
+You must have an emulator configured and ready prior to invoking this step.
+
+It is recommend that you ...
+
+
+## Configuration Inputs
+
+### app_apk
+
+The full path to the application apk under test. For library projects, this will be the test apk.
+
+### app_package
+
+The package name of the app. For example, `com.sample`
+
+### target_apk
+
+The file name of the test runner .apk
+
+### target_package
+
+The package name of test runner .apk
+For example, `com.sample.test`
+
+### test_runner
+
+The fully qualified class name for the Instrumentation test runner. e.g. `androidx.test.runner.AndroidJUnitRunner`
+
+### module
+
+The gradle project module name. For example, `:app`
+
+### verbose
+
+You can enable the verbose log for easier debugging.
+
+---
 
 ## License
 
