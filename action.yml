@@ -32,19 +32,19 @@ inputs:
     description: DPI value to set on the emulator
     required: false
 
-  animations: false
+  animations:
     description: Enable animations on the emulator
     required: true
 
-  show_ime_with_hard_keyboard: false
+  show_ime_with_hard_keyboard:
     description: Show the onscreen keyboard (IME)
     required: true
 
-  show_passwords: false
+  show_passwords:
     description: Show password entry characters
     required: true
 
-  verbose: false
+  verbose:
     description: You can enable the verbose log for easier debugging.
     required: true
 
