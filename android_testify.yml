@@ -4,10 +4,6 @@ author: 'ndtp'
 
 inputs:
 
-  adb_command: #  "$ADB_COMMAND"
-      description: The command-line statement to run with adb
-      required: true
-
   module: # "$MODULE"
     description: The gradle project module name. e.g. `:app`
     required: true
@@ -64,23 +60,27 @@ runs:
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v4
 
-    - name: Run ${{ inputs.module }}:test${{ inputs.variantName }}UnitTest
+    - name: Run action script
       shell: bash
       run: |
-        ./gradlew ${{ inputs.module }}:test${{ inputs.variantName }}UnitTest
+        ./action.sh
 
     - name: Upload test results
       uses: actions/upload-artifact@v4
+      if: always()
       with:
-        name: ${{ inputs.artifactName }}
-        path: "**/build/test-results/test${{ inputs.variantName }}UnitTest/*.xml"
+        name: screenshot-test-results
+        path: |
+          screenshot-test-logcat.log
+          ./output/
+          "./app/build/outputs/androidTest-results/connected/**/*.xml"
 
     - name: Test Report
       uses: dorny/test-reporter@v1
       if: success() || failure()
       with:
-        name: Unit Tests
-        path: ./app/build/test-results/test${{ inputs.variantName }}UnitTest/*.xml
+        name: Screenshot Tests
+        path: "./app/build/outputs/androidTest-results/connected/debug/*.xml"
         reporter: java-junit
 
 branding:
