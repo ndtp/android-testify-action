@@ -225,38 +225,40 @@ archive_failed_images()
     popd
 }
 
-  # animations: false
-  # app_apk: # "$APP_APK"
-  # app_package: # "$APP_PACKAGE"
-  # device_density: # "$DEVICE_DENSITY"
-  # module: # "$MODULE"
-  # show_ime_with_hard_keyboard: false
-  # show_passwords: false
-  # test_apk: # "$TEST_APK"
-  # test_package: # "$TEST_PACKAGE"
-  # test_runner: # "androidx.test.runner.AndroidJUnitRunner"
-  # verbose: false
-
 load_input_arguments()
 {
-    # Load GitHub Inputs
-    export "animations=${{ inputs.animations }}"
-    export "app_apk=${{ inputs.app_apk }}"
-    export "app_package=${{ inputs.app_package }}"
-    export "device_density=${{ inputs.device_density }}"
-    export "module=${{ inputs.module }}"
-    export "show_ime_with_hard_keyboard=${{ inputs.show_ime_with_hard_keyboard }}"
-    export "show_passwords=${{ inputs.show_passwords }}"
-    export "test_apk=${{ inputs.test_apk }}"
-    export "test_package=${{ inputs.test_package }}"
-    export "test_runner=${{ inputs.test_runner }}"
-    export "verbose=${{ inputs.verbose }}"
+    # Load local environment variables
+    animations=$ANIMATIONS
+    app_apk=$APP_APK
+    app_package=$APP_PACKAGE
+    device_density=$DEVICE_DENSITY
+    module=$MODULE
+    show_ime_with_hard_keyboard=$SHOW_IME_WITH_HARD_KEYBOARD
+    show_passwords=$SHOW_PASSWORDS
+    test_apk=$TEST_APK
+    test_package=$TEST_PACKAGE
+    test_runner=$TEST_RUNNER
+    verbose=$VERBOSE
 
+    # Override with GitHub input arguments
+    animations=$1
+    app_apk=$2
+    app_package=$3
+    device_density=$4
+    module=$5
+    show_ime_with_hard_keyboard=$6
+    show_passwords=$7
+    test_apk=$8
+    test_package=$9
+    test_runner=${10}
+    verbose=${11}
+
+    export animations app_apk app_package device_density module show_ime_with_hard_keyboard show_passwords test_apk test_package test_runner verbose
 }
 
 main()
 {
-    load_input_arguments()
+    load_input_arguments "$@"
 
     if [ "$verbose" == true ] || [ "$VERBOSE" == true ]; then
         info "Verbose mode enabled"
@@ -274,4 +276,4 @@ main()
     verify_test_status
 }
 
-main
+main "$@"
