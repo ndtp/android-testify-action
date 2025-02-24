@@ -63,6 +63,19 @@ runs:
     - name: Run action script
       shell: bash
       run: |
+        echo "GITHUB_WORKSPACE:${GITHUB_WORKSPACE}"
+        echo "======="
+        echo "pwd:"
+        pwd
+        echo ""
+        echo "======="
+        echo "find . | grep action.sh"
+        find . | grep action.sh
+        echo "======="
+        echo "ls -Rl"
+        ls -Rl
+
+        echo "run action.sh"
         ./action.sh ${{ inputs.animations }} ${{ inputs.app_apk }} ${{ inputs.app_package }} ${{ inputs.device_density }} ${{ inputs.module }} ${{ inputs.show_ime_with_hard_keyboard }} ${{ inputs.show_passwords }} ${{ inputs.test_apk }} ${{ inputs.test_package }} ${{ inputs.test_runner }} ${{ inputs.verbose }}
 
     - name: Upload test results
