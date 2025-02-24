@@ -1,0 +1,88 @@
+name: 'Android Testify Action'
+description: 'GitHub Action for running Android Testify screenshot tests'
+author: 'ndtp'
+
+inputs:
+
+  adb_command: #  "$ADB_COMMAND"
+      description: The command-line statement to run with adb
+      required: true
+
+  module: # "$MODULE"
+    description: The gradle project module name. e.g. `:app`
+    required: true
+
+  app_apk: # "$APP_APK"
+    description: The full path to the application apk under test. For library projects, this will be the test apk.
+    required: true
+
+  app_package: # "$APP_PACKAGE"
+    description: The package name of the app. For example, `com.sample`
+    required: true
+
+  test_apk: # "$TEST_APK"
+    description: The file name of the test runner .apk
+    required: true
+
+  test_package: # "$TEST_PACKAGE"
+    description: The package name of test runner .apk
+    required: true
+
+  test_runner: # "androidx.test.runner.AndroidJUnitRunner"
+    description: The fully qualified class name for the Instrumentation test runner. e.g. `androidx.test.runner.AndroidJUnitRunner`
+    required: true
+
+  device_density: # "$DEVICE_DENSITY"
+    description: DPI value to set on the emulator
+    required: false
+
+  animations: false
+    description: Enable animations on the emulator
+    required: true
+
+  show_ime_with_hard_keyboard: false
+    description: Show the onscreen keyboard (IME)
+    required: true
+
+  show_passwords: false
+    description: Show password entry characters
+    required: true
+
+  verbose: false
+    description: You can enable the verbose log for easier debugging.
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: "temurin"
+        java-version: 17
+
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v4
+
+    - name: Run ${{ inputs.module }}:test${{ inputs.variantName }}UnitTest
+      shell: bash
+      run: |
+        ./gradlew ${{ inputs.module }}:test${{ inputs.variantName }}UnitTest
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.artifactName }}
+        path: "**/build/test-results/test${{ inputs.variantName }}UnitTest/*.xml"
+
+    - name: Test Report
+      uses: dorny/test-reporter@v1
+      if: success() || failure()
+      with:
+        name: Unit Tests
+        path: ./app/build/test-results/test${{ inputs.variantName }}UnitTest/*.xml
+        reporter: java-junit
+
+branding:
+  icon: 'check-circle'
+  color: 'green'
