@@ -60,24 +60,29 @@ runs:
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v4
 
-    - name: Run action script
-      shell: bash
+    - name: Enable KVM
       run: |
-        echo "GITHUB_WORKSPACE:${GITHUB_WORKSPACE}"
-        echo "======="
-        echo "pwd:"
-        pwd
-        echo ""
-        echo "======="
-        echo "find . | grep action.sh"
-        find . | grep action.sh
-        echo ""
-        echo "======="
-        echo "github.action_path"
-        echo "${{ github.action_path }}"
+        echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+        sudo udevadm control --reload-rules
+        sudo udevadm trigger --name-match=kvm
 
-        echo "run action.sh"
-        "${{ github.action_path }}/action.sh" ${{ inputs.animations }} ${{ inputs.app_apk }} ${{ inputs.app_package }} ${{ inputs.device_density }} ${{ inputs.module }} ${{ inputs.show_ime_with_hard_keyboard }} ${{ inputs.show_passwords }} ${{ inputs.test_apk }} ${{ inputs.test_package }} ${{ inputs.test_runner }} ${{ inputs.verbose }}
+    - name: Run screenshot tests
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        api-level: 29
+        arch: x86_64
+        target: google_apis
+        profile: pixel_3a
+        script: |
+          echo "Emulator is loaded"
+          echo "run action.sh"
+          "${{ github.action_path }}/action.sh" ${{ inputs.animations }} ${{ inputs.app_apk }} ${{ inputs.app_package }} ${{ inputs.device_density }} ${{ inputs.module }} ${{ inputs.show_ime_with_hard_keyboard }} ${{ inputs.show_passwords }} ${{ inputs.test_apk }} ${{ inputs.test_package }} ${{ inputs.test_runner }} ${{ inputs.verbose }}
+
+    # - name: Run action script
+    #   shell: bash
+    #   run: |
+    #     echo "run action.sh"
+    #     "${{ github.action_path }}/action.sh" ${{ inputs.animations }} ${{ inputs.app_apk }} ${{ inputs.app_package }} ${{ inputs.device_density }} ${{ inputs.module }} ${{ inputs.show_ime_with_hard_keyboard }} ${{ inputs.show_passwords }} ${{ inputs.test_apk }} ${{ inputs.test_package }} ${{ inputs.test_runner }} ${{ inputs.verbose }}
 
     - name: Upload test results
       uses: actions/upload-artifact@v4
@@ -87,14 +92,14 @@ runs:
         path: |
           screenshot-test-logcat.log
           ./output/
-          "./app/build/outputs/androidTest-results/connected/**/*.xml"
+          "**test_result_**.xml**"
 
     - name: Test Report
       uses: dorny/test-reporter@v1
       if: success() || failure()
       with:
         name: Screenshot Tests
-        path: "./app/build/outputs/androidTest-results/connected/debug/*.xml"
+        path: "**test_result_**.xml**"
         reporter: java-junit
 
 branding:
