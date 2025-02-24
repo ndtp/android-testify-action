@@ -227,45 +227,47 @@ archive_failed_images()
 
 load_input_arguments()
 {
-    # Load local environment variables
-    animations=$ANIMATIONS
-    app_apk=$APP_APK
-    app_package=$APP_PACKAGE
-    device_density=$DEVICE_DENSITY
-    module=$MODULE
-    show_ime_with_hard_keyboard=$SHOW_IME_WITH_HARD_KEYBOARD
-    show_passwords=$SHOW_PASSWORDS
-    test_apk=$TEST_APK
-    test_package=$TEST_PACKAGE
-    test_runner=$TEST_RUNNER
-    verbose=$VERBOSE
+    export animations="${1:-${ANIMATIONS}}"
+    export app_apk="${2:-${APP_APK}}"
+    export app_package="${3:-${APP_PACKAGE}}"
+    export device_density="${4:-${DEVICE_DENSITY}}"
+    export module="${5:-${MODULE}}"
+    export show_ime_with_hard_keyboard="${6:-${SHOW_IME_WITH_HARD_KEYBOARD}}"
+    export show_passwords="${7:-${SHOW_PASSWORDS}}"
+    export test_apk="${8:-${TEST_APK}}"
+    export test_package="${9:-${TEST_PACKAGE}}"
+    export test_runner="${10:-${TEST_RUNNER}}"
+    export verbose="${11:-${VERBOSE}}"
+}
 
-    # Override with GitHub input arguments
-    animations=$1
-    app_apk=$2
-    app_package=$3
-    device_density=$4
-    module=$5
-    show_ime_with_hard_keyboard=$6
-    show_passwords=$7
-    test_apk=$8
-    test_package=$9
-    test_runner=${10}
-    verbose=${11}
-
-    export animations app_apk app_package device_density module show_ime_with_hard_keyboard show_passwords test_apk test_package test_runner verbose
+verify_input_arguments()
+{
+    verbose "verify_input_arguments()"
+    verbose "animations=$animations"
+    verbose "app_apk=$app_apk"
+    verbose "app_package=$app_package"
+    verbose "device_density=$device_density"
+    verbose "module=$module"
+    verbose "show_ime_with_hard_keyboard=$show_ime_with_hard_keyboard"
+    verbose "show_passwords=$show_passwords"
+    verbose "test_apk=$test_apk"
+    verbose "test_package=$test_package"
+    verbose "test_runner=$test_runner"
+    verbose "verbose=$verbose"
 }
 
 main()
 {
     load_input_arguments "$@"
+    verify_input_arguments
 
     if [ "$verbose" == true ] || [ "$VERBOSE" == true ]; then
         info "Verbose mode enabled"
     fi
 
     SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
-    echo "SCRIPT_DIR: $SCRIPT_DIR"
+    verbose "SCRIPT_DIR: $SCRIPT_DIR"
+
     assert_emulator
     install_apk $app_apk $app_package package
     install_apk $test_apk $test_package instrumentation
