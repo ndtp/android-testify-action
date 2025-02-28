@@ -120,7 +120,11 @@ configure_emulator()
 
 invoke_adb_command()
 {
-    local adb_command="adb shell am instrument -r -w -e annotation dev.testify.annotation.ScreenshotInstrumentation $test_package/$test_runner"
+     if [ -n "$shard_count" ] && [ "$shard_count" -gt "0" ]; then
+        shard="-e numShards $shard_count -e shardIndex $shard_index"
+    fi
+
+    local adb_command="adb shell am instrument -r -w $shard -e annotation dev.testify.annotation.ScreenshotInstrumentation $test_package/$test_runner"
 
     info "Running '$adb_command'..."
     adb logcat -c
@@ -237,7 +241,9 @@ load_input_arguments()
     export test_apk="${8:-${TEST_APK}}"
     export test_package="${9:-${TEST_PACKAGE}}"
     export test_runner="${10:-${TEST_RUNNER}}"
-    export verbose="${11:-${VERBOSE}}"
+    export shard_count="${11:-${SHARD_COUNT}}"
+    export shard_index="${12:-${SHARD_INDEX}}"
+    export verbose="${13:-${VERBOSE}}"
 }
 
 verify_input_arguments()
@@ -253,6 +259,8 @@ verify_input_arguments()
     verbose "test_apk=$test_apk"
     verbose "test_package=$test_package"
     verbose "test_runner=$test_runner"
+    verbose "shard_count=$shard_count"
+    verbose "shard_index=$shard_index"
     verbose "verbose=$verbose"
 }
 

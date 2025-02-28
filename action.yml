@@ -49,6 +49,16 @@ inputs:
     description: The fully qualified class name for the Instrumentation test runner. e.g. `androidx.test.runner.AndroidJUnitRunner`
     required: true
 
+  shard_count:
+    description: "The total number of test execution shards to use."
+    default: 0
+    required: false
+
+  shard_index:
+    description: "Current shard index to run for testing."
+    default: 0
+    required: false
+
   device_density:
     description: DPI value to set on the emulator
     default: 0
@@ -103,7 +113,7 @@ runs:
         script: |
           echo "Emulator is loaded"
           adb logcat >> screenshot-test-logcat.log &
-          "${{ github.action_path }}/action.sh" ${{ inputs.animations }} ${{ inputs.app_apk }} ${{ inputs.app_package }} ${{ inputs.device_density }} ${{ inputs.module }} ${{ inputs.show_ime_with_hard_keyboard }} ${{ inputs.show_passwords }} ${{ inputs.test_apk }} ${{ inputs.test_package }} ${{ inputs.test_runner }} ${{ inputs.verbose }}
+          "${{ github.action_path }}/action.sh" ${{ inputs.animations }} ${{ inputs.app_apk }} ${{ inputs.app_package }} ${{ inputs.device_density }} ${{ inputs.module }} ${{ inputs.show_ime_with_hard_keyboard }} ${{ inputs.show_passwords }} ${{ inputs.test_apk }} ${{ inputs.test_package }} ${{ inputs.test_runner }} ${{ inputs.shard_count }} ${{ inputs.shard_index }} ${{ inputs.verbose }}
 
     - name: Upload test results
       uses: actions/upload-artifact@v4

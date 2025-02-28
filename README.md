@@ -115,6 +115,31 @@ Example:
     test_runner: "androidx.test.runner.AndroidJUnitRunner"
 ```
 
+### shard_count
+
+Optional, defaults to 0
+
+The total number of test execution shards to use.
+
+If you need to parallelize the execution of your tests, sharing them across multiple emulators to make them run faster, you can split them into groups, or shards. The test runner supports splitting a single test suite into multiple shards, so you can easily run tests belonging to the same shard together as a group. Each shard is identified by an index number. When running tests, use the `shard_count` option to specify the number of separate shards to create and the `shard_index` option to specify which shard to run.
+
+For example, to split the test suite into 10 shards and run only the tests grouped in the second shard:
+```yaml
+    shard_count: 10
+    shard_index: 2
+```
+
+### shard_index
+
+Optional, defaults to 0
+
+Current shard index to run for testing.
+
+Example:
+```yaml
+    shard_index: 1
+```
+
 ### animations
 
 Optional, default is `false`.
