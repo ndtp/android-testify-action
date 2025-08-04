@@ -99,17 +99,39 @@ runs:
     - name: Enable KVM
       uses: ndtp/enable-kvm-action@v1
 
-    - name: Run screenshot tests
-      uses: reactivecircus/android-emulator-runner@v2
+    - name: Boot emulator
+      uses: ndtp/android-emulator-runner@main
       with:
         api-level: ${{ inputs.api-level }}
         arch: ${{ inputs.arch }}
         target: ${{ inputs.target }}
         profile: ${{ inputs.profile }}
-        script: |
-          echo "Emulator is loaded"
-          adb logcat >> screenshot-test-logcat.log &
-          "${{ github.action_path }}/action.sh" ${{ inputs.animations }} ${{ inputs.app_apk }} ${{ inputs.app_package }} ${{ inputs.device_density }} ${{ inputs.module }} ${{ inputs.show_ime_with_hard_keyboard }} ${{ inputs.show_passwords }} ${{ inputs.test_apk }} ${{ inputs.test_package }} ${{ inputs.test_runner }} ${{ inputs.shard_count }} ${{ inputs.shard_index }} ${{ inputs.verbose }}
+        script: adb devices
+
+    - name: Run instrumentation tests
+      uses: ndtp/android-instrumentation-test-runner@main
+      with:
+        app_apk: ${{ inputs.app_apk }}
+        app_package: ${{ inputs.app_package }}
+        test_apk: ${{ inputs.test_apk }}
+        test_package: ${{ inputs.test_package }}
+        test_runner: ${{ inputs.test_runner }}
+        shard_count: ${{ inputs.shard_count }}
+        shard_index: ${{ inputs.shard_index }}
+        verbose: ${{ inputs.verbose }}
+        annotation: "annotation dev.testify.annotation.ScreenshotInstrumentation"
+
+    # - name: Run screenshot tests
+    #   uses: reactivecircus/android-emulator-runner@v2
+    #   with:
+    #     api-level: ${{ inputs.api-level }}
+    #     arch: ${{ inputs.arch }}
+    #     target: ${{ inputs.target }}
+    #     profile: ${{ inputs.profile }}
+    #     script: |
+    #       echo "Emulator is loaded"
+    #       adb logcat >> screenshot-test-logcat.log &
+    #       "${{ github.action_path }}/action.sh" ${{ inputs.animations }} ${{ inputs.app_apk }} ${{ inputs.app_package }} ${{ inputs.device_density }} ${{ inputs.module }} ${{ inputs.show_ime_with_hard_keyboard }} ${{ inputs.show_passwords }} ${{ inputs.test_apk }} ${{ inputs.test_package }} ${{ inputs.test_runner }} ${{ inputs.shard_count }} ${{ inputs.shard_index }} ${{ inputs.verbose }}
 
     - name: Upload test results
       uses: actions/upload-artifact@v4
