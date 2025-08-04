@@ -100,7 +100,7 @@ runs:
       uses: ndtp/enable-kvm-action@v1
 
     - name: Boot emulator
-      uses: ndtp/android-emulator-runner@v4.0.3
+      uses: ndtp/android-emulator-runner@v4.0.4
       with:
         api-level: ${{ inputs.api-level }}
         arch: ${{ inputs.arch }}
