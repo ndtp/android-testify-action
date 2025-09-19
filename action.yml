@@ -79,6 +79,11 @@ inputs:
     default: false
     required: false
 
+  output_name:
+    description: File name to use for artifacts
+    default: screenshot-test-results
+    required: false
+
   verbose:
     description: You can enable the verbose log for easier debugging.
     default: false
@@ -111,11 +116,27 @@ runs:
           adb logcat >> screenshot-test-logcat.log &
           "${{ github.action_path }}/action.sh" ${{ inputs.animations }} ${{ inputs.app_apk }} ${{ inputs.app_package }} ${{ inputs.device_density }} ${{ inputs.module }} ${{ inputs.show_ime_with_hard_keyboard }} ${{ inputs.show_passwords }} ${{ inputs.test_apk }} ${{ inputs.test_package }} ${{ inputs.test_runner }} ${{ inputs.shard_count }} ${{ inputs.shard_index }} ${{ inputs.verbose }}
 
+    - name: Evaluate output
+      if: success() || failure()
+      shell: bash
+      run: |
+        shard_count=${{ inputs.shard_count }}
+        shard_index=${{ inputs.shard_index }}
+        output_name=${{ inputs.output_name }}
+
+        if [ "$shard_count" -gt 0 ]; then
+          name="$output_name-${shard_index}"
+        else
+          name="$output_name"
+        fi
+
+        echo "output_name=$name" >> $GITHUB_ENV
+
     - name: Upload test results
       uses: actions/upload-artifact@v4
-      if: always()
+      if: success() || failure()
       with:
-        name: screenshot-test-results-${{ inputs.shard_index }}
+        name: ${{ env.output_name }}
         path: |
           screenshot-test-logcat.log
           ./output/
@@ -125,7 +146,7 @@ runs:
       uses: dorny/test-reporter@v1
       if: success() || failure()
       with:
-        name: Screenshot Tests ${{ inputs.shard_index }}
+        name: Screenshot Tests ${{ inputs.module }} ${{ inputs.shard_index }}
         path: "./reports/*.xml"
         reporter: java-junit
 
